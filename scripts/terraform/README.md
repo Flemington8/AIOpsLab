@@ -83,6 +83,6 @@ This guide outlines the steps for establishing a secure connection to your Azure
 2. Once the plan is verified, remove the resources using the below command:
 
     ```shell
-    terraform destroy "main.destroy.tfplan"
+    terraform apply "main.destroy.tfplan"
     ```
 
