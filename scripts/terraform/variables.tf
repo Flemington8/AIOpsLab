@@ -12,6 +12,7 @@ variable "username" {
 
 variable "resource_name_prefix" {
   type        = string
+  default     = "aiopslab"
   description = "Prefix for all the resource names."
 }
 
@@ -27,5 +28,6 @@ variable "resource_name_prefix" {
 
 variable "resource_group_name" {
   type        = string
+  default     = "AIOpsLabRG"
   description = "The name of the resource group where the all the resources should be created."
 }
