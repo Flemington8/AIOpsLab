@@ -47,7 +47,7 @@ This guide outlines the steps for establishing a secure connection to your Azure
    b) _resource_prefix_name_ (prefix): a prefix for all the resources created using the Terraform script.
 
    ```shell
-   terraform plan -out main.tfplan -var " resource_group_name=<rg>" -var "resource_name_prefix=<prefix>"
+   terraform plan -out main.tfplan -var "resource_group_name=<rg>" -var "resource_name_prefix=<prefix>"
    ```
 5. **Apply the saved plan**
 
@@ -83,6 +83,6 @@ This guide outlines the steps for establishing a secure connection to your Azure
 2. Once the plan is verified, remove the resources using the below command:
 
     ```shell
-    terraform destroy main.destroy.tfplan
+    terraform destroy "main.destroy.tfplan"
     ```
 
