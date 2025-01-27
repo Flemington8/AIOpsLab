@@ -1,0 +1,167 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Research Proposal: Enhancing AIOps with Reinforcement Learning through OpenR Framework Integration}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Wentao Ye}
+    % \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+    %     \textit{name of organization (of Aff.)}\\
+    %     City, Country \\
+    %     email address or ORCID}
+}
+
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+    In IT Operations (ITOps), managing complex cloud environments requires intelligent systems that emulate human reasoning to detect, diagnose, and resolve issues efficiently. 
+    AIOpsLab introduces a structured framework that divides IT operations into four main stages: Incident Detection, Triage after Localization, Root Cause Diagnosis, and Mitigation Resolution. 
+    Each stage requires the agent to interact with the cloud environment iteratively to achieve its objectives. 
+
+    The OpenR framework introduces a novel reinforcement learning (RL) suite designed to model reasoning-intensive tasks. 
+    It structures reasoning processes as a sequence of steps (Q $\rightarrow$ \{R\} $\rightarrow$ A) modeled as a Markov Decision Process (MDP), offering a structured mechanism for reasoning that aligns with the demands of IT operations. 
+    
+    This proposal explores the integration of OpenR into the AIOpsLab to create an RL-driven solution for IT operations, leveraging OpenR's reasoning-focused approach to enhance performance across all operational stages.
+\end{abstract}
+
+\section{Background and Motivation}
+
+\subsection{IT Operations Framework (AIOpsLab)}
+AIOpsLab outlines IT operations as a structured process consisting of four stages:
+\begin{enumerate}
+    \item \textbf{Incident Detection}: Identifying anomalies or issues in the system.
+    \item \textbf{Triage after Localization}: Narrowing down potential causes and prioritizing them.
+    \item \textbf{Root Cause Diagnosis}: Pinpointing the exact cause of the issue.
+    \item \textbf{Mitigation Resolution}: Implementing corrective actions to resolve the issue.
+\end{enumerate}
+
+Each stage involves iterative reasoning and interaction with the cloud environment, resembling human problem-solving. An RL agent capable of emulating this reasoning can significantly enhance the speed, accuracy, and efficiency of IT operations.
+
+\subsection{The OpenR Framework}
+The OpenR framework proposes a structured methodology for reasoning tasks, particularly in scenarios that require iterative problem-solving and question-answering. It defines the reasoning process as a sequence (Q $\rightarrow$ \{R\} $\rightarrow$ A), where:
+\begin{itemize}
+    \item \textbf{Q} represents the question or prompt initiating the reasoning process.
+    \item \textbf{R} represents the intermediate reasoning steps taken to build toward a solution.
+    \item \textbf{A} represents the final answer or solution derived from the reasoning steps.
+\end{itemize}
+
+By framing reasoning as a Markov Decision Process (MDP), OpenR provides flexibility in modeling both sequential and branching reasoning paths:
+\begin{itemize}
+    \item \textbf{States} represent the sequence of reasoning steps taken so far.
+    \item \textbf{Actions} involve selecting the next reasoning step or final answer.
+    \item \textbf{Policy} refers to the LLM's function for generating reasoning steps and answers.
+    \item \textbf{Process Reward Model (PRM)} provides feedback on the quality of reasoning steps and final answers, guiding the LLM policy to optimize its output.
+\end{itemize}
+
+This combination of sequential and branching reasoning allows OpenR to explore diverse solutions while maintaining logical consistency, making it a robust framework for reasoning-intensive tasks.
+
+\subsection{Motivation for Integration}
+Both OpenR and AIOpsLab emphasize the importance of reasoning in task-solving. By integrating OpenR into AIOpsLab, we aim to:
+\begin{enumerate}
+    \item \textbf{Enhance Agent Performance}: Leverage OpenR's structured reasoning approach to improve performance in each operational stage.
+    \item \textbf{Enable Adaptive Learning}: Use OpenR's RL methodology to continuously refine the agent's decision-making process during cloud interactions.
+    \item \textbf{Create a Scalable Framework}: Develop a scalable methodology for training RL agents in dynamic cloud environments.
+\end{enumerate}
+
+\section{Objectives}
+\begin{enumerate}
+    \item \textbf{Framework Integration}:
+    \begin{itemize}
+        \item Adapt OpenR's RL suite for IT operations tasks within the AIOpsLab framework.
+        \item Leverage the Q $\rightarrow$ \{R\} $\rightarrow$ A structure to align reasoning processes with IT operations workflows.
+    \end{itemize}
+    
+    \item \textbf{Performance Optimization}:
+    \begin{itemize}
+        \item Investigate the impact of OpenR's reasoning-based RL approach on agent performance across the four IT operations stages.
+    \end{itemize}
+    
+    \item \textbf{Online Learning}:
+    \begin{itemize}
+        \item Implement online policy learning during inference to enable real-time performance improvements.
+    \end{itemize}
+    
+    \item \textbf{Scalability and Robustness}:
+    \begin{itemize}
+        \item Develop scalable training pipelines to generalize the RL framework for diverse IT operations scenarios.
+    \end{itemize}
+\end{enumerate}
+
+\section{Research Methodology}
+
+\subsection{Framework Design}
+\begin{enumerate}
+    \item \textbf{Agent Architecture}:
+    \begin{itemize}
+        \item Extend the AIOpsLab agent to incorporate OpenR's RL suite.
+        \item Structure agent reasoning using the Q $\rightarrow$ \{R\} $\rightarrow$ A sequence for step-by-step problem-solving.
+    \end{itemize}
+    
+    \item \textbf{Process Reward Model (PRM)}:
+    \begin{itemize}
+        \item Adapt OpenR's PRM to evaluate intermediate steps and final outputs for IT operations tasks.
+        \item Explore fine-tuning the PRM using IT operations datasets to provide domain-specific feedback.
+    \end{itemize}
+    
+    \item \textbf{Interactive Environment}:
+    \begin{itemize}
+        \item Develop a simulated cloud environment where the agent can practice and refine its reasoning processes.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Online Policy Learning}
+\begin{itemize}
+    \item Enable online policy learning during inference to dynamically refine the agent's behavior as it interacts with the cloud environment.
+    \item Use retrieval-augmented generation (RAG) to provide the agent with context-specific knowledge.
+\end{itemize}
+
+\subsection{Dataset Preparation}
+\begin{itemize}
+    \item Utilize logs, incidents, and historical data from IT operations to create a reasoning-oriented dataset.
+    \item Incorporate \textbf{human-in-the-loop annotation} to ensure data quality and relevance.
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+In addition to the metrics outlined in the AIOpsLab paper, we want to propose a \textbf{custom metric} to evaluate the performance of the integrated OpenR-AIOps framework.
+
+\section{Key Challenges}
+
+\subsection{Dataset and Domain Adaptation}
+Adapting OpenR's reasoning framework to IT operations tasks presents two interconnected challenges:
+\begin{enumerate}
+    \item \textbf{Dataset Preparation}: Unlike OpenR's math-reasoning focus, IT operations lack a well-structured dataset for process-level supervision. Creating a dataset that accurately reflects the reasoning processes involved in IT operations—such as diagnosing root causes or resolving incidents—is costly and complex.
+    \item \textbf{Framework Modification}: The OpenR framework relies on Process Reward Models (PRMs) fine-tuned on task-specific datasets (e.g., OmegaPRM for math reasoning). For IT operations, the lack of pre-existing high-quality datasets for process supervision means we may need to modify the PRM design or even the reasoning structure itself (Q $\rightarrow$ \{R\} $\rightarrow$ A) to better suit IT-specific challenges.
+\end{enumerate}
+
+\subsection{Computational Costs}
+Scaling RL training for reasoning-intensive tasks like IT operations is resource-intensive. OpenR's RL suite requires significant computational resources for training its models, especially when incorporating branching reasoning paths or running simulations in dynamic cloud environments.
+
+\section{Expected Contributions}
+\begin{enumerate}
+    \item A novel integration of the OpenR framework into the AIOpsLab for IT operations tasks.
+    \item An RL-driven methodology for enhancing reasoning and decision-making in dynamic cloud environments.
+    \item A benchmark for evaluating RL-based solutions in IT operations, emphasizing reasoning quality and task efficiency.
+\end{enumerate}
+
+\section{Conclusion}
+Integrating the OpenR framework into AIOpsLab presents a transformative opportunity to enhance IT operations by leveraging reasoning-focused reinforcement learning. This research will contribute to developing more intelligent, adaptive, and efficient autonomous systems for managing complex cloud environments.
+
+\begin{thebibliography}{00}
+    \bibitem{b1} Y. Chen et al., “AIOpsLab: A Holistic Framework to Evaluate AI Agents for Enabling Autonomous Clouds”.
+    \bibitem{b2} M. Shetty et al., “Building AI Agents for Autonomous Clouds: Challenges and Design Principles,” Jul. 31, 2024, arXiv: arXiv:2407.12165. doi: 10.48550/arXiv.2407.12165.
+    \bibitem{b3} L. Zheng et al., “Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena,” Dec. 24, 2023, arXiv: arXiv:2306.05685. doi: 10.48550/arXiv.2306.05685.
+    \bibitem{b4} J. Wang et al., “OpenR: An Open Source Framework for Advanced Reasoning with Large Language Models,” Oct. 12, 2024, arXiv: arXiv:2410.09671. doi: 10.48550/arXiv.2410.09671.
+\end{thebibliography}
+
+\end{document}
