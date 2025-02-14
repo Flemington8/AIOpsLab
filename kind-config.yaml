@@ -1,0 +1,15 @@
+# sudo mkdir -p /mnt/datadrive/prometheus
+# sudo chown -R $(whoami):$(whoami) /mnt/datadrive/prometheus
+# sudo chmod -R 777 /mnt/datadrive/prometheus
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraMounts:
+      - hostPath: /mnt/datadrive/prometheus
+        containerPath: /datadrive/prometheus
+  - role: worker
+    extraMounts:
+      - hostPath: /mnt/datadrive/prometheus
+        containerPath: /datadrive/prometheus
