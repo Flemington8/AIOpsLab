@@ -105,17 +105,24 @@ class DeepSeekR1:
             payload = self.ensure_interleaved_messages(payload)
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
+                stream=True,
                 model="deepseek-reasoner",
                 max_tokens=1024,
                 n=1,
                 timeout=60,
                 stop=[],
             )
+
+            content = ""
+
+            for chunk in response:
+                content += chunk.choices[0].delta.content
+
         except Exception as e:
             print(f"Exception: {repr(e)}")
             raise e
 
-        return [c.message.content for c in response.choices]  # type: ignore
+        return [content]
 
     def run(self, payload: list[dict[str, str]]) -> list[str]:
         response = self.inference(payload)
