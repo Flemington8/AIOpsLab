@@ -6,6 +6,7 @@
 import time
 import uuid
 import json
+import wandb
 from pydantic import BaseModel
 
 from aiopslab.paths import RESULTS_DIR
@@ -112,12 +113,15 @@ class Session:
 
         return summary
 
-    def to_json(self):
+    def to_json(self, use_wandb=False):
         """Save the session to a JSON file."""
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
         with open(RESULTS_DIR / f"{self.session_id}_{self.start_time}.json", "w") as f:
             json.dump(self.to_dict(), f, indent=4)
+        if use_wandb:
+            wandb.Artifact(f"{self.session_id}_{self.start_time}", type="session").add_file(
+                RESULTS_DIR / f"{self.session_id}_{self.start_time}.json")
 
     def from_json(self, filename: str):
         """Load a session from a JSON file."""

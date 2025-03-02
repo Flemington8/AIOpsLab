@@ -1,12 +1,16 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-"""An common abstraction for a cached LLM inference setup. Currently supports OpenAI's gpt-4-turbo."""
+"""An common abstraction for a cached LLM inference setup. Currently supports OpenAI's gpt-4-turbo and DeepSeek-R1 models."""
 
 import os
+from dotenv import load_dotenv
 from openai import OpenAI
 from pathlib import Path
 import json
+
+# Load environment variables from the .env file
+load_dotenv()
 
 CACHE_DIR = Path("./cache_dir")
 CACHE_PATH = CACHE_DIR / "cache.json"

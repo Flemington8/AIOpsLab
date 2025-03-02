@@ -1,15 +1,19 @@
-"""Naive GPT4 client (with shell access) for AIOpsLab.
+"""Naive DeepSeek-R1 client (with shell access) for AIOpsLab.
 
-Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida et al. 
-"Gpt-4 technical report." arXiv preprint arXiv:2303.08774 (2023).
+"DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning" arXiv preprint arXiv:2501.12948 (2025).
 
-Code: https://openai.com/index/gpt-4-research/
-Paper: https://arxiv.org/abs/2303.08774
+Paper: https://arxiv.org/abs/2501.12948
 """
 
+
+import argparse
 import asyncio
 
+import wandb
+import time
+
 from aiopslab.orchestrator import Orchestrator
+from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import DeepSeekR1
 from clients.utils.templates import DOCS_SHELL_ONLY
 
@@ -58,12 +62,39 @@ class Agent:
 
 
 if __name__ == "__main__":
-    agent = Agent()
+    parser = argparse.ArgumentParser(
+        description="DeepSeek R1 client for AIOpsLab")
+    parser.add_argument(
+        "--use_wandb",
+        action="store_true",
+        default=False,
+        help="Enable Weights & Biases logging"
+    )
+    args = parser.parse_args()
 
-    orchestrator = Orchestrator()
-    orchestrator.register_agent(agent, name="deepseek-r1")
+    registry = ProblemRegistry()
+    pids = list(registry.PROBLEM_REGISTRY.keys())
 
-    pid = "misconfig_app_hotel_res-mitigation-1"
-    problem_desc, instructs, apis = orchestrator.init_problem(pid)
-    agent.init_context(problem_desc, instructs, apis)
-    asyncio.run(orchestrator.start_problem(max_steps=10))
+    if args.use_wandb:
+        # Initialize wandb run
+        wandb.init(project="AIOpsLab", entity="bita-tech")
+
+    for pid in pids:
+        agent = Agent()
+
+        orchestrator = Orchestrator(use_wandb=args.use_wandb)
+        orchestrator.register_agent(agent, name="deepseek-r1")
+        try:
+            problem_desc, instructs, apis = orchestrator.init_problem(pid)
+            agent.init_context(problem_desc, instructs, apis)
+            asyncio.run(orchestrator.start_problem(max_steps=10))
+            print(f"Successfully processed pid {pid}.")
+
+        except Exception as e:
+            print(f"Failed to process pid {pid}. Error: {e}")
+            time.sleep(60)
+            continue
+
+    if args.use_wandb:
+        # Finish the wandb run
+        wandb.finish()
