@@ -16,7 +16,7 @@ import asyncio
 
 
 class Orchestrator:
-    def __init__(self):
+    def __init__(self, use_wandb=False):
         self.agent = None
         self.session = None
         self.parser = ResponseParser()
@@ -25,7 +25,7 @@ class Orchestrator:
         self.execution_start_time = None
         self.execution_end_time = None
         self.kubectl = KubeCtl()
-        self.use_wandb = False
+        self.use_wandb = use_wandb
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
