@@ -120,8 +120,9 @@ class Session:
         with open(RESULTS_DIR / f"{self.session_id}_{self.start_time}.json", "w") as f:
             json.dump(self.to_dict(), f, indent=4)
         if use_wandb:
-            wandb.Artifact(f"{self.session_id}_{self.start_time}", type="session").add_file(
-                RESULTS_DIR / f"{self.session_id}_{self.start_time}.json")
+            artifact = wandb.Artifact(f"{self.session_id}_{self.start_time}", type="result")
+            artifact.add_file(RESULTS_DIR / f"{self.session_id}_{self.start_time}.json")
+            wandb.log_artifact(artifact)
 
     def from_json(self, filename: str):
         """Load a session from a JSON file."""
