@@ -1,0 +1,31 @@
+{
+  "os":  "Linux-6.8.0-52-generic-x86_64-with-glibc2.39",
+  "python":  "CPython 3.12.3",
+  "startedAt":  "2025-03-02T10:34:51.442120Z",
+  "program":  "/root/projects/AIOpsLab/clients/deepseek.py",
+  "codePath":  "clients/deepseek.py",
+  "git":  {
+    "remote":  "https://github.com/Flemington8/AIOpsLab.git",
+    "commit":  "2a130b0f56b6e980dc176ed0e947d90706780308"
+  },
+  "email":  "warrenyeh7@gmail.com",
+  "root":  "/root/projects/AIOpsLab",
+  "host":  "ubuntu-s-4vcpu-8gb-sfo3-01",
+  "executable":  "/root/.cache/pypoetry/virtualenvs/aiopslab-wHvTWSiJ-py3.12/bin/python3",
+  "codePathLocal":  "clients/deepseek.py",
+  "cpu_count":  4,
+  "cpu_count_logical":  4,
+  "disk":  {
+    "/":  {
+      "total":  "165295407104",
+      "used":  "15957917696"
+    }
+  },
+  "memory":  {
+    "total":  "8327086080"
+  },
+  "cpu":  {
+    "count":  4,
+    "countLogical":  4
+  }
+}
