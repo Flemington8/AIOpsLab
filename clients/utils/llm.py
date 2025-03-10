@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pathlib import Path
 import json
+import subprocess
+import requests
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -145,3 +147,62 @@ class DeepSeekR1:
             last_role = message["role"]
 
         return interleaved_messages
+
+class LocalLLM:
+    """Abstraction for local LLM models."""
+
+    def __init__(self):
+        self.cache = Cache()
+
+    # Load and run the model
+    def load_model(self):
+        # Load the model using subprocess
+        try:
+            server_process = subprocess.Popen(
+                ["vllm", "serve", "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"],
+            )
+        except Exception as e:
+            print(f"Failed to load and run the model server: {e}")
+            raise e
+    
+    def wait_for_ready(url="http://localhost:8000/v1/rerank", timeout=1):
+        try:
+            response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                print("Model server is ready.")
+                return True
+        except requests.exceptions.RequestException:
+            return False
+
+    def inference(self, payload: list[dict[str, str]]) -> list[str]:
+        if self.cache is not None:
+            cache_result = self.cache.get_from_cache(payload)
+            if cache_result is not None:
+                return cache_result
+
+        client = OpenAI(api_key="EMPTY", base_url="http://localhost:8000")
+        try:
+            response = client.chat.completions.create(
+                messages=payload,  # type: ignore
+                model="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+                max_tokens=1024,
+                temperature=0.5,
+                top_p=0.95,
+                frequency_penalty=0.0,
+                presence_penalty=0.0,
+                n=1,
+                timeout=60,
+                stop=[],
+            )
+        except Exception as e:
+            print(f"Exception: {repr(e)}")
+            raise e
+
+        return [c.message.content for c in response.choices]  # type: ignore
+
+    def run(self, payload: list[dict[str, str]]) -> list[str]:
+        response = self.inference(payload)
+        if self.cache is not None:
+            self.cache.add_to_cache(payload, response)
+            self.cache.save_cache()
+        return response
