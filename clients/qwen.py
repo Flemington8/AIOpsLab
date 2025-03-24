@@ -4,10 +4,9 @@
 
 import argparse
 import asyncio
-
-import wandb
 import time
 
+import wandb
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import QwQplus
@@ -22,9 +21,11 @@ class Agent:
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
 
-        self.shell_api = self._filter_dict(apis, lambda k, _: "exec_shell" in k)
+        self.shell_api = self._filter_dict(
+            apis, lambda k, _: "exec_shell" in k)
         self.submit_api = self._filter_dict(apis, lambda k, _: "submit" in k)
-        stringify_apis = lambda apis: "\n\n".join(
+
+        def stringify_apis(apis): return "\n\n".join(
             [f"{k}\n{v}" for k, v in apis.items()]
         )
 
@@ -59,7 +60,7 @@ class Agent:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="DeepSeek R1 client for AIOpsLab")
+        description="Qwen QwQplus client for AIOpsLab")
     parser.add_argument(
         "--use_wandb",
         action="store_true",
@@ -73,14 +74,16 @@ if __name__ == "__main__":
 
     if args.use_wandb:
         # Initialize wandb run
-        wandb.init(project="AIOpsLab", entity="bita-tech")
+        wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
     for pid in pids:
         agent = Agent()
 
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
-        orchestrator.register_agent(agent, name="deepseek-r1")
+        orchestrator.register_agent(agent, name="qwen-qwqplus")
         try:
+            print(f"*"*20)
+            print(f"Began processing pid {pid}...")
             problem_desc, instructs, apis = orchestrator.init_problem(pid)
             agent.init_context(problem_desc, instructs, apis)
             asyncio.run(orchestrator.start_problem(max_steps=10))
