@@ -3,13 +3,14 @@
 
 """An common abstraction for a cached LLM inference setup. Currently supports OpenAI's gpt-4-turbo and DeepSeek-R1 models."""
 
+import json
 import os
+import subprocess
+from pathlib import Path
+
+import requests
 from dotenv import load_dotenv
 from openai import OpenAI
-from pathlib import Path
-import json
-import subprocess
-import requests
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -102,7 +103,8 @@ class DeepSeekR1:
             if cache_result is not None:
                 return cache_result
 
-        client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
+        client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"),
+                        base_url="https://api.deepseek.com")
         try:
             payload = self.ensure_interleaved_messages(payload)
             response = client.chat.completions.create(
@@ -124,7 +126,7 @@ class DeepSeekR1:
             self.cache.add_to_cache(payload, response)
             self.cache.save_cache()
         return response
-    
+
     def ensure_interleaved_messages(self, payload: list[dict[str, str]]) -> list[dict[str, str]]:
         """
         deepseek-reasoner does not support successive user or assistant messages.
@@ -140,13 +142,67 @@ class DeepSeekR1:
                 if message["role"] == "user":
                     interleaved_messages[-1]["content"] += f"\n\n{message['content']}"
                 else:
-                    interleaved_messages.append({"role": "assistant", "content": "..."})  # Placeholder
+                    interleaved_messages.append(
+                        {"role": "assistant", "content": "..."})  # Placeholder
             else:
                 interleaved_messages.append(message)
 
             last_role = message["role"]
 
         return interleaved_messages
+
+
+class QwQplus:
+    """Abstraction for Qwen's QwQplus model."""
+
+    def __init__(self):
+        self.cache = Cache()
+
+    def inference(self, payload: list[dict[str, str]]) -> list[str]:
+        if self.cache is not None:
+            cache_result = self.cache.get_from_cache(payload)
+            if cache_result is not None:
+                return cache_result
+
+        client = OpenAI(api_key=os.getenv("DASHSCOPE_API_KEY"),
+                        base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
+        try:
+            response = client.chat.completions.create(
+                messages=payload,  # type: ignore
+                model="qwq-plus",
+                max_tokens=1024,
+                temperature=0.5,
+                top_p=0.95,
+                frequency_penalty=0.0,
+                presence_penalty=0.0,
+                n=1,
+                timeout=60,
+                stop=[],
+                stream=True
+            )
+        except Exception as e:
+            print(f"Exception: {repr(e)}")
+            raise e
+
+        answer_content = ""
+
+        print("\n" + "=" * 20 + "Thinking Process" + "=" * 20 + "\n")
+        for chunk in response:
+            if not chunk.choices:
+                print("\nUsage:")
+                print(chunk.usage)
+            else:
+                delta = chunk.choices[0].delta
+                answer_content += delta.content
+        return answer_content
+
+    def run(self, payload: list[dict[str, str]]) -> list[str]:
+        response = self.inference(payload)
+        if self.cache is not None:
+            self.cache.add_to_cache(payload, response)
+            self.cache.save_cache()
+        return response
+
 
 class LocalLLM:
     """Abstraction for local LLM models."""
@@ -164,7 +220,7 @@ class LocalLLM:
         except Exception as e:
             print(f"Failed to load and run the model server: {e}")
             raise e
-    
+
     def wait_for_ready(url="http://localhost:8000/v1/rerank", timeout=1):
         try:
             response = requests.get(url, timeout=timeout)
