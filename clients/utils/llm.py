@@ -210,26 +210,6 @@ class LocalLLM:
     def __init__(self):
         self.cache = Cache()
 
-    # Load and run the model
-    def load_model(self):
-        # Load the model using subprocess
-        try:
-            server_process = subprocess.Popen(
-                ["vllm", "serve", "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"],
-            )
-        except Exception as e:
-            print(f"Failed to load and run the model server: {e}")
-            raise e
-
-    def wait_for_ready(url="http://localhost:8000/v1/rerank", timeout=1):
-        try:
-            response = requests.get(url, timeout=timeout)
-            if response.status_code == 200:
-                print("Model server is ready.")
-                return True
-        except requests.exceptions.RequestException:
-            return False
-
     def inference(self, payload: list[dict[str, str]]) -> list[str]:
         if self.cache is not None:
             cache_result = self.cache.get_from_cache(payload)
@@ -240,7 +220,7 @@ class LocalLLM:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+                model="Qwen/Qwen2.5-1.5B-Instruct",
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,
