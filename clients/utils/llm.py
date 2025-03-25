@@ -104,7 +104,6 @@ class DeepSeekR1:
         client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"),
                         base_url="https://api.deepseek.com")
         try:
-            # payload = self.ensure_interleaved_messages(payload)
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
                 model="deepseek-reasoner",
@@ -124,30 +123,6 @@ class DeepSeekR1:
             self.cache.add_to_cache(payload, response)
             self.cache.save_cache()
         return response
-
-    def ensure_interleaved_messages(self, payload: list[dict[str, str]]) -> list[dict[str, str]]:
-        """
-        deepseek-reasoner does not support successive user or assistant messages.
-        Ensures that the messages list is properly interleaved with user/assistant roles.
-        If two consecutive user messages are detected, merge or restructure them.
-        """
-        interleaved_messages = []
-        last_role = None
-
-        for message in payload:
-            if last_role == message["role"]:
-                # If two consecutive user messages appear, merge them
-                if message["role"] == "user":
-                    interleaved_messages[-1]["content"] += f"\n\n{message['content']}"
-                else:
-                    interleaved_messages.append(
-                        {"role": "assistant", "content": "..."})  # Placeholder
-            else:
-                interleaved_messages.append(message)
-
-            last_role = message["role"]
-
-        return interleaved_messages
 
 
 class QwQplus:
