@@ -5,10 +5,8 @@
 
 import json
 import os
-import subprocess
 from pathlib import Path
 
-import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -165,16 +163,12 @@ class QwQplus:
                 return cache_result
 
         client = OpenAI(api_key=os.getenv("DASHSCOPE_API_KEY"),
-                        base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
+                        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
                 model="qwq-plus",
                 max_tokens=1024,
-                temperature=0.5,
-                top_p=0.95,
-                frequency_penalty=0.0,
-                presence_penalty=0.0,
                 n=1,
                 timeout=60,
                 stop=[],
@@ -184,16 +178,23 @@ class QwQplus:
             print(f"Exception: {repr(e)}")
             raise e
 
+        reasoning_content = ""
         answer_content = ""
+        is_answering = False
 
-        print("\n" + "=" * 20 + "Thinking Process" + "=" * 20 + "\n")
         for chunk in response:
             if not chunk.choices:
                 print("\nUsage:")
                 print(chunk.usage)
             else:
                 delta = chunk.choices[0].delta
-                answer_content += delta.content
+                if hasattr(delta, 'reasoning_content') and delta.reasoning_content != None:
+                    reasoning_content += delta.reasoning_content
+                else:
+                    if delta.content != "" and is_answering is False:
+                        is_answering = True
+                    answer_content += delta.content
+
         return answer_content
 
     def run(self, payload: list[dict[str, str]]) -> list[str]:
