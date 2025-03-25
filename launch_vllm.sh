@@ -4,8 +4,11 @@
 # Set the model directory/path and desired port
 MODEL="Qwen/Qwen2.5-1.5B-Instruct"
 
+# Create a safe filename by replacing slashes with underscores
+SAFE_MODEL_NAME=$(echo $MODEL | tr '/' '_')
+
 # Launch vLLM in background using nohup and redirect both stdout and stderr to a log file.
-nohup poetry run vllm serve "$MODEL" > log/vllm.log 2>&1 &
+nohup poetry run vllm serve $MODEL > vllm_$SAFE_MODEL_NAME.log 2>&1 &
 
 # Print a message indicating that vLLM is running.
-echo "vLLM has been launched in the background with the $MODEL model. Check vllm.log for output."
+echo "vLLM has been launched in the background with the $MODEL model. Check vllm_$SAFE_MODEL_NAME.log for output."
