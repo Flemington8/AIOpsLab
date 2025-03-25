@@ -195,7 +195,7 @@ class QwQplus:
                         is_answering = True
                     answer_content += delta.content
 
-        return answer_content
+        return [answer_content]
 
     def run(self, payload: list[dict[str, str]]) -> list[str]:
         response = self.inference(payload)
