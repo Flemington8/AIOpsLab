@@ -144,10 +144,11 @@ if __name__ == "__main__":
     # Example usage:
     wandb_dir = "./wandb"
     results_dir = "./aiopslab/data/results"
+    report_dir = "./reports"
 
     final_report = parse_all_runs(wandb_dir, results_dir)
     # Save the final report to a file
-    output_path = os.path.join(wandb_dir, "final_report.json")
-    with open(output_path, "w", encoding="utf-8") as outfile:
+    report_path = os.path.join(report_dir, "final_report.json")
+    with open(report_path, "w", encoding="utf-8") as outfile:
         json.dump(final_report, outfile, indent=2)
-    print(f"Final report saved to {output_path}")
+    print(f"Final report saved to {report_path}")
