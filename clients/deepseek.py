@@ -87,12 +87,9 @@ if __name__ == "__main__":
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
         orchestrator.register_agent(agent, name="deepseek-r1")
         try:
-            print(f"*"*20)
-            print(f"Began processing pid {pid}...")
             problem_desc, instructs, apis = orchestrator.init_problem(pid)
             agent.init_context(problem_desc, instructs, apis)
             asyncio.run(orchestrator.start_problem(max_steps=10))
-            print(f"Successfully processed pid {pid}.")
 
         except Exception as e:
             print(f"Failed to process pid {pid}. Error: {e}")
