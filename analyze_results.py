@@ -1,7 +1,9 @@
+import glob
 import json
 import os
-import glob
+
 from aiopslab.paths import RESULTS_DIR
+
 
 def parse_value(val):
     """Convert 'Correct'/'Incorrect' to 1.0/0.0 or parse float if possible."""
@@ -15,6 +17,7 @@ def parse_value(val):
         return float(val)
     except:
         return None
+
 
 def analyze_results(directory):
     # Keep only one entry per (agent, problem_id)
@@ -66,7 +69,8 @@ def analyze_results(directory):
                 ttr = parse_value(results.get("TTR", None))
                 steps = parse_value(results.get("steps", None))
                 if slc is not None and ftc is not None and success is not None and ttr is not None and steps is not None:
-                    root_cause_analysis_data.append((slc, ftc, success, ttr, steps))
+                    root_cause_analysis_data.append(
+                        (slc, ftc, success, ttr, steps))
             # Mitigation
             if "mitigation" in problem_id:
                 success = parse_value(results["success"])
@@ -103,9 +107,12 @@ def analyze_results(directory):
     print("Root cause analysis tasks:")
     if root_cause_analysis_data:
         print("  Number of problems:", len(root_cause_analysis_data))
-        print("  Average System-Level Correct(%):", avg(root_cause_analysis_data, 0) * 100)
-        print("  Average Fault-Type Correct(%):", avg(root_cause_analysis_data, 1) * 100)
-        print("  Average Root Cause Analysis Success(%):", avg(root_cause_analysis_data, 2) * 100)
+        print("  Average System-Level Correct(%):",
+              avg(root_cause_analysis_data, 0) * 100)
+        print("  Average Fault-Type Correct(%):",
+              avg(root_cause_analysis_data, 1) * 100)
+        print("  Average Root Cause Analysis Success(%):",
+              avg(root_cause_analysis_data, 2) * 100)
         print("  Average TTR:", avg(root_cause_analysis_data, 3))
         print("  Average steps:", avg(root_cause_analysis_data, 4))
     else:
@@ -115,11 +122,67 @@ def analyze_results(directory):
     print("Mitigation tasks:")
     if mitigation_data:
         print("  Number of problems:", len(mitigation_data))
-        print("  Average Mitigation Success(%):", avg(mitigation_data, 0) * 100)
+        print("  Average Mitigation Success(%):",
+              avg(mitigation_data, 0) * 100)
         print("  Average TTM:", avg(mitigation_data, 1))
         print("  Average steps:", avg(mitigation_data, 2))
     else:
         print("  No data")
 
+
+def analyze_format_errors(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
+    """
+    Iterates all JSON files in results_dir, identifies agents containing 'agent',
+    counts the 'env' messages that say 'Error parsing response: No API call found!',
+    and computes the ratio compared to all trace entries for that file.
+    """
+    total_files = 0
+    total_steps = 0
+    total_errors = 0
+
+    for file_name in os.listdir(results_dir):
+        if file_name.endswith(".json"):
+            json_path = os.path.join(results_dir, file_name)
+            if os.path.isfile(json_path):
+                try:
+                    with open(json_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+
+                    if agent == data.get("agent", ""):
+                        trace = data.get("trace", [])
+                        file_trace_count = data.get(
+                            "results", {}).get("steps", 0)
+                        file_error_count = 0
+
+                        for step in trace:
+                            if step.get("role") == "env":
+                                content = step.get("content", "")
+                                if "Error parsing response: No API call found!" in content:
+                                    file_error_count += 1
+
+                        total_files += 1
+                        total_steps += file_trace_count
+                        total_errors += file_error_count
+                except Exception as e:
+                    print(f"Failed to process file {json_path}: {e}")
+                    continue
+
+    if total_files == 0:
+        print(f"No agent logs found matching '{agent}'.")
+        return
+
+    # Compute ratio
+    ratio = (total_errors / total_steps * 100) if total_steps else 0
+
+    print(f"=== {agent} Error Parsing Analysis ===")
+    print(
+        f"Total JSON files (with agent containing '{agent}'): {total_files}")
+    print(f"Total trace steps: {total_steps}")
+    print(f"Total 'Error parsing' responses: {total_errors}")
+    print(f"Error parsing ratio: {ratio:.2f}%")
+
+
 if __name__ == "__main__":
-    analyze_results(RESULTS_DIR)
+    # Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-3B-Instruct, deepseek-r1, qwen-qwqplus
+    analyze_format_errors(RESULTS_DIR, "qwen-qwqplus")
+    # analyze_results(RESULTS_DIR)
