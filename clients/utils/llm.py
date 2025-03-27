@@ -65,7 +65,7 @@ class GPT4Turbo:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="gpt-4o-mini",
+                model="gpt-4.5-preview",
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,

@@ -6,10 +6,13 @@ Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia
 Code: https://openai.com/index/gpt-4-research/
 Paper: https://arxiv.org/abs/2303.08774
 """
-
+import argparse
 import asyncio
+import time
 
+import wandb
 from aiopslab.orchestrator import Orchestrator
+from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import GPT4Turbo
 from clients.utils.templates import DOCS_SHELL_ONLY
 
@@ -58,12 +61,54 @@ class Agent:
 
 
 if __name__ == "__main__":
-    agent = Agent()
+    parser = argparse.ArgumentParser(
+    description="OpenAI gpt client for AIOpsLab")
+    parser.add_argument(
+        "--use_wandb",
+        action="store_true",
+        default=False,
+        help="Enable Weights & Biases logging"
+    )
+    args = parser.parse_args()
 
-    orchestrator = Orchestrator()
-    orchestrator.register_agent(agent, name="gpt-w-shell")
+    registry = ProblemRegistry()
+    pids = list(registry.PROBLEM_REGISTRY.keys())
 
-    pid = "misconfig_app_hotel_res-mitigation-1"
-    problem_desc, instructs, apis = orchestrator.init_problem(pid)
-    agent.init_context(problem_desc, instructs, apis)
-    asyncio.run(orchestrator.start_problem(max_steps=10))
+    if args.use_wandb:
+        # Initialize wandb run
+        wandb.init(project="AIOpsLab", entity="AIOpsLab")
+
+    for pid in pids:
+        agent = Agent()
+
+        orchestrator = Orchestrator(use_wandb=args.use_wandb)
+        orchestrator.register_agent(agent, name="gpt-4.5-preview")
+        try:
+            print(f"*"*30)
+            print(f"Began processing pid {pid}.")
+            print(f"*"*30)
+            problem_desc, instructs, apis = orchestrator.init_problem(pid)
+            agent.init_context(problem_desc, instructs, apis)
+            asyncio.run(orchestrator.start_problem(max_steps=10))
+            print(f"*"*30)
+            print(f"Successfully processed pid {pid}.")
+            print(f"*"*30)
+
+        except Exception as e:
+            print(f"Failed to process pid {pid}. Error: {e}")
+            time.sleep(60)
+            continue
+
+    if args.use_wandb:
+        # Finish the wandb run
+        wandb.finish()
+        
+    # agent = Agent()
+
+    # orchestrator = Orchestrator()
+    # orchestrator.register_agent(agent, name="gpt-w-shell")
+
+    # pid = "misconfig_app_hotel_res-mitigation-1"
+    # problem_desc, instructs, apis = orchestrator.init_problem(pid)
+    # agent.init_context(problem_desc, instructs, apis)
+    # asyncio.run(orchestrator.start_problem(max_steps=10))
