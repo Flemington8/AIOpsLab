@@ -73,10 +73,10 @@ For manual selection:
 
 ```bash
 # AMD64
-kind create cluster --config kind/kind-config-amd64.yaml
+kind create cluster --config kind/kind-config-x86.yaml
 
 # ARM64
-kind create cluster --config kind/kind-config-arm64.yaml
+kind create cluster --config kind/kind-config-arm.yaml
 ```
 
 If your the installation is very slow on your MacOS (Apple Silicon), you can try to check the Settings of the Docker Desktop's dashboard and enable:
@@ -84,6 +84,19 @@ If your the installation is very slow on your MacOS (Apple Silicon), you can try
 2) Use Rosetta for x86/amd64 emulation on Apple Silicon
 
 If you are using WSL2 Ubuntu or native Ubuntu, you can follow the instructions in the [kind/README.md](./kind/README.md) for further setup.
+
+### [Tips]
+If you are running AIOpsLab using a proxy, beware of exporting the HTTP proxy as `172.17.0.1`. When creating the kind cluster, all the nodes in the cluster will inherit the proxy setting from the host environment and the Docker container. 
+
+The `172.17.0.1` address is used to communicate with the host machine. For more details, refer to the official guide: [Configure Kind to Use a Proxy](https://kind.sigs.k8s.io/docs/user/quick-start/#configure-kind-to-use-a-proxy).
+
+Additionally, Docker doesn't support SOCKS5 proxy directly. If you're using a SOCKS5 protocol to proxy, you may need to use [Privoxy](https://www.privoxy.org) to forward SOCKS5 to HTTP.
+
+If you're running VLLM and the LLM agent locally, Privoxy will by default proxy `localhost`, which will cause errors. To avoid this issue, you should set the following environment variable:
+
+```bash
+export no_proxy=localhost
+``` 
 
 After finishing cluster creation, proceed to the next "Update `config.yml`" step.
 
