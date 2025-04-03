@@ -47,7 +47,7 @@ class LocalizationTask(Task):
 
             If there are faulty components to submit:
 
-            ```\nsubmit(["placeholderA", "placeholderB"])\n```
+            ```\nsubmit([\"placeholderA\", \"placeholderB\"])\n```
 
             (where "placeholderA" and "placeholderB" are placeholders; replace them with the faulty components in your environment)
             
