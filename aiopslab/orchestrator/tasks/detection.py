@@ -32,7 +32,7 @@ class DetectionTask(Task):
             {app_summary}
 
             You will begin by analyzing the service's state and telemetry, and then submit your solution:
-            1. str: `Yes` or `No` to indicate whether there are anomalies detected
+            1. str: "Yes" or "No" to indicate whether there are anomalies detected
             """
 
         self.instructions = """\
