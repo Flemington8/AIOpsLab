@@ -45,7 +45,17 @@ class LocalizationTask(Task):
             
             ```\nexec_shell("ls -l")\n```
 
-            Please respond with only a single single API call per turn without any additional words, labels, or prefixes.
+            If there are faulty components to submit:
+
+            ```\nsubmit(["placeholderA", "placeholderB"])\n```
+
+            (where "placeholderA" and "placeholderB" are placeholders; replace them with the faulty components in your environment)
+            
+            Or, if no faults are found:
+
+            ```\nsubmit()\n```
+
+            Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
 
     def get_task_description(self):

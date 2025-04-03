@@ -43,7 +43,15 @@ class MitigationTask(Task):
             
             ```\nexec_shell("ls -l")\n```
 
-            Please respond with only a single single API call per turn without any additional words, labels, or prefixes.
+            Once your solution is complete and ready for evaluation, you must call:
+            
+            ```\nsubmit()\n```
+
+            Note:
+            - The submit() call for the mitigation task does not take any parameters.
+            - A submission via submit() is considered valid if it is made, though this does not necessarily indicate that your solution is correct.
+
+            Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
 
     def get_task_description(self):

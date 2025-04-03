@@ -57,7 +57,17 @@ class AnalysisTask(Task):
             
             ```\nexec_shell("ls -l")\n```
 
-            Please respond with only a single single API call per turn without any additional words, labels, or prefixes.
+            When submitting your analysis, use the following format:
+
+            ```\nsubmit({"system_level": "your_system_level_analysis", "fault_type": "your_fault_type_analysis"})\n```
+            
+            Replace "your_system_level_analysis" and "your_fault_type_analysis" with the actual analysis of the system level and fault type.
+
+            Or, if no fault is detected, you should respond with:
+
+            ```\nsubmit()\n```
+
+            Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
 
     def get_task_description(self):
