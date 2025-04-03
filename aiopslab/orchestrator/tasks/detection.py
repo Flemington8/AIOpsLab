@@ -26,9 +26,9 @@ class DetectionTask(Task):
         self.actions = DetectionActions()
 
         self.task_desc = """\
-            You are an expert DevOps engineer who has been tasked with detecting anomalies in a deployed service.
-
-            The service you are working with today is described below:
+            You are an expert DevOps engineer assigned to detect anomalies in a deployed service.
+            
+            Service Details:
             {app_summary}
 
             You will begin by analyzing the service's state and telemetry, and then submit your solution:
@@ -38,16 +38,13 @@ class DetectionTask(Task):
         self.instructions = """\
             You will respond with one of the above APIs as your next action.
             Please respond in the following format in a markdown code block:
-            ```
-            <API_NAME>(<API_PARAM1>, <API_PARAM2> ...)
-            ```
+            ```\n<API_NAME>(<API_PARAM1>, <API_PARAM2> ...)\n```
 
-            For example:
-            ```
-            exec_shell("ls -l")      # will list files in current directory
-            ```
+            For instance, if you want to list files in current directory, your response must be exactly:
+            
+            ```\nexec_shell("ls -l")\n```
 
-            Please respond with only a single action per turn.
+            Please respond with only a single single API call per turn without any additional words, labels, or prefixes.
             """
 
     def get_task_description(self):

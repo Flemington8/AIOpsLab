@@ -326,7 +326,7 @@ cython_debug/
 
 # User-specific stuff
 temp/
-reports/
+docs/
 
 # Visual Studio Code
 .vscode/
