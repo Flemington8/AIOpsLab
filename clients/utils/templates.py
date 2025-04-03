@@ -41,7 +41,9 @@ Finally, you will submit your solution for this task using the following API:
 
 {submit_api}
 
-The type of parameter in submit() should conform the requirement.
+IMPORTANT:
+1. The submit() call must strictly follow its defined parameter signature for this task.
+2. Provide the call in a markdown code block.
 
 """
 

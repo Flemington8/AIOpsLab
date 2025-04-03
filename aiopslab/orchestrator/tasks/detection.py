@@ -44,7 +44,15 @@ class DetectionTask(Task):
             
             ```\nexec_shell("ls -l")\n```
 
-            Please respond with only a single single API call per turn without any additional words, labels, or prefixes.
+            If you decide that there are no anomalies:
+
+            ```\nsubmit("No")\n```
+
+            Or, if anomalies are found:
+
+            ```\nsubmit("Yes")\n```
+
+            Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
 
     def get_task_description(self):
