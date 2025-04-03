@@ -35,18 +35,14 @@ Action: <your action>
 DOCS_SHELL_ONLY = """{prob_desc}
 You are provided with a direct API to a secure terminal to the service where you can run commands:
 
-
 {shell_api}
-
 
 Finally, you will submit your solution for this task using the following API:
 
-
 {submit_api}
 
+The type of parameter in submit() should conform the requirement.
 
-At each turn respond with:
-Action: <your action>
 """
 
 AUTOGEN_DOCS = """{prob_desc}
