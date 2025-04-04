@@ -33,7 +33,7 @@ class LocalizationTask(Task):
 
             You will begin by analyzing the service's state and telemetry, and then submit one of two possible solutions:
             1. list[str]: list of faulty components (i.e., service names)
-            2. str: `None` if no faults were detected
+            2. list[]: an empty list if no faults were detected
             """
 
         self.instructions = """\
@@ -53,7 +53,7 @@ class LocalizationTask(Task):
             
             Or, if no faults are found:
 
-            ```\nsubmit()\n```
+            ```\nsubmit([])\n```
 
             Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
