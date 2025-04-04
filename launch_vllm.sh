@@ -8,6 +8,7 @@ MODEL="Qwen/Qwen2.5-1.5B-Instruct"
 SAFE_MODEL_NAME=$(echo $MODEL | tr '/' '_')
 
 # Launch vLLM in background using nohup and redirect both stdout and stderr to a log file.
+# nohup poetry run vllm serve $MODEL --tensor-parallel-size 4 > vllm_$SAFE_MODEL_NAME.log 2>&1 &
 nohup poetry run vllm serve $MODEL > vllm_$SAFE_MODEL_NAME.log 2>&1 &
 
 # Print a message indicating that vLLM is running.
