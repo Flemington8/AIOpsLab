@@ -28,11 +28,7 @@ Moreover, AIOpsLab provides a built-in benchmark suite with a set of problems to
 
 ### Requirements
 - Python >= 3.11
-<<<<<<< HEAD
-[Helm](https://helm.sh/)
-=======
 - [Helm](https://helm.sh/)
->>>>>>> main
 
 Recommended installation:
 ```bash
@@ -58,6 +54,7 @@ Choose either a) or b) to set up your cluster and then proceed to the next steps
 
 ### a) Local simulated cluster
 AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/) on your local machine.
+AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/) on your local machine.
 
 ```bash
 # For x86 machines
@@ -67,25 +64,7 @@ kind create cluster --config kind/kind-config-x86.yaml
 kind create cluster --config kind/kind-config-arm.yaml
 ```
 
-<<<<<<< HEAD
-For manual selection:
-
-```bash
-# AMD64
-kind create cluster --config kind/kind-config-x86.yaml
-
-# ARM64
-kind create cluster --config kind/kind-config-arm.yaml
-```
-
-If your the installation is very slow on your MacOS (Apple Silicon), you can try to check the Settings of the Docker Desktop's dashboard and enable:
-1) Use containerd for pulling and storing images
-2) Use Rosetta for x86/amd64 emulation on Apple Silicon
-
-If you are using WSL2 Ubuntu or native Ubuntu, you can follow the instructions in the [kind/README.md](./kind/README.md) for further setup.
-=======
 If you're running into issues, consider building a Docker image for your machine by following this [README](kind/README.md). Please also open an issue.
->>>>>>> main
 
 ### [Tips]
 If you are running AIOpsLab using a proxy, beware of exporting the HTTP proxy as `172.17.0.1`. When creating the kind cluster, all the nodes in the cluster will inherit the proxy setting from the host environment and the Docker container. 
