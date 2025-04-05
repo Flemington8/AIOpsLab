@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
         orchestrator.register_agent(
-            agent, name="Qwen2.5-1.5B-Instruct")
+            agent, name="DeepSeek-R1-Distill-Qwen-14B")
         try:
             print(f"*"*30)
             print(f"Began processing pid {pid}.")
