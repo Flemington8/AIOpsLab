@@ -188,5 +188,5 @@ def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct", min_
 
 
 if __name__ == "__main__":
-    analyze_response_format(RESULTS_DIR, "DeepSeek-R1-Distill-Qwen-14B", min_timestamp=1743931924.3313851)
+    analyze_response_format(RESULTS_DIR, "Qwen2.5-Coder-7B-Instruct", min_timestamp=1743936516.0250447)
     # analyze_results(RESULTS_DIR)
