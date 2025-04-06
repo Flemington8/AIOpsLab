@@ -196,7 +196,7 @@ class LocalLLM:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+                model="Qwen/Qwen2.5-Coder-7B-Instruct",
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,
