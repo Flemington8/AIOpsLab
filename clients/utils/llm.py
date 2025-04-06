@@ -142,7 +142,7 @@ class QwQplus:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="qwq-plus",
+                model="qwen-32b",
                 max_tokens=1024,
                 n=1,
                 timeout=60,

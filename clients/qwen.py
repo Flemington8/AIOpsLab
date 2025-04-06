@@ -80,7 +80,7 @@ if __name__ == "__main__":
         agent = Agent()
 
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
-        orchestrator.register_agent(agent, name="qwen-qwqplus")
+        orchestrator.register_agent(agent, name="qwen-32b")
         try:
             print(f"*"*30)
             print(f"Began processing pid {pid}.")
