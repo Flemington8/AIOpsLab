@@ -130,11 +130,11 @@ def analyze_results(directory):
         print("  No data")
 
 
-def analyze_format_errors(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
+def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
     """
-    Iterates all JSON files in results_dir, identifies agents containing 'agent',
-    counts the 'env' messages that say 'Error parsing response: No API call found!',
-    and computes the ratio compared to all trace entries for that file.
+    For each JSON file with the specified agent, count how many 'assistant' actions
+    are in correct format vs. total actions, then compute a ratio. Also print an
+    overall ratio across all files.
     """
     total_files = 0
     total_steps = 0
@@ -154,10 +154,11 @@ def analyze_format_errors(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
                             "results", {}).get("steps", 0)
                         file_error_count = 0
 
-                        for step in trace:
-                            if step.get("role") == "env":
-                                content = step.get("content", "")
-                                if "Error parsing response: No API call found!" in content:
+                        for i in range(len(trace)):
+                            msg = trace[i]
+                            if msg.get("role") == "env":
+                                content = msg.get("content", "")
+                                if "Error parsing response:" in content:
                                     file_error_count += 1
 
                         total_files += 1
@@ -183,6 +184,5 @@ def analyze_format_errors(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
 
 
 if __name__ == "__main__":
-    # Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-3B-Instruct, deepseek-r1, qwen-qwqplus
-    analyze_format_errors(RESULTS_DIR, "qwen-qwqplus")
+    analyze_response_format(RESULTS_DIR, "DeepSeek-R1-Distill-Qwen-14B")
     # analyze_results(RESULTS_DIR)
