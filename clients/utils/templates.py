@@ -45,6 +45,8 @@ IMPORTANT:
 1. The submit() call must strictly follow its defined parameter signature for this task.
 2. Provide the call in a markdown code block.
 
+At each turn respond with:
+Action: <your action>
 """
 
 AUTOGEN_DOCS = """{prob_desc}
