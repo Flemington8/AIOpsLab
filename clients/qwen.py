@@ -9,14 +9,14 @@ import time
 import wandb
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
-from clients.utils.llm import QwQplus
+from clients.utils.llm import Qwen
 from clients.utils.templates import DOCS_SHELL_ONLY
 
 
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = QwQplus()
+        self.llm = Qwen()
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         agent = Agent()
 
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
-        orchestrator.register_agent(agent, name="qwen-32b")
+        orchestrator.register_agent(agent, name="qwq-32b")
         try:
             print(f"*"*30)
             print(f"Began processing pid {pid}.")

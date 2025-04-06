@@ -125,8 +125,8 @@ class DeepSeekR1:
         return response
 
 
-class QwQplus:
-    """Abstraction for Qwen's QwQplus model."""
+class Qwen:
+    """Abstraction for Qwen's model."""
 
     def __init__(self):
         self.cache = Cache()
@@ -142,7 +142,7 @@ class QwQplus:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="qwen-32b",
+                model="qwq-32b",
                 max_tokens=1024,
                 n=1,
                 timeout=60,
