@@ -122,19 +122,19 @@ def analyze_results(directory):
     print("Mitigation tasks:")
     if mitigation_data:
         print("  Number of problems:", len(mitigation_data))
-        print("  Average Mitigation Success(%):",
-              avg(mitigation_data, 0) * 100)
+        print("  Average Mitigation Success(%):", avg(mitigation_data, 0) * 100)
         print("  Average TTM:", avg(mitigation_data, 1))
         print("  Average steps:", avg(mitigation_data, 2))
     else:
         print("  No data")
 
 
-def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
+def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct", min_timestamp=None):
     """
     For each JSON file with the specified agent, count how many 'assistant' actions
     are in correct format vs. total actions, then compute a ratio. Also print an
-    overall ratio across all files.
+    overall ratio across all files. If min_timestamp is given, only process files
+    with start_time > min_timestamp.
     """
     total_files = 0
     total_steps = 0
@@ -148,10 +148,15 @@ def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
                     with open(json_path, "r", encoding="utf-8") as f:
                         data = json.load(f)
 
+                    # Skip old results if min_timestamp is specified
+                    if min_timestamp is not None:
+                        start_time = data.get("start_time", 0)
+                        if start_time <= min_timestamp:
+                            continue
+
                     if agent == data.get("agent", ""):
                         trace = data.get("trace", [])
-                        file_trace_count = data.get(
-                            "results", {}).get("steps", 0)
+                        file_trace_count = data.get("results", {}).get("steps", 0)
                         file_error_count = 0
 
                         for i in range(len(trace)):
@@ -176,8 +181,7 @@ def analyze_response_format(results_dir, agent="Qwen2.5-Coder-3B-Instruct"):
     ratio = (total_errors / total_steps * 100) if total_steps else 0
 
     print(f"=== {agent} Error Parsing Analysis ===")
-    print(
-        f"Total JSON files (with agent containing '{agent}'): {total_files}")
+    print(f"Total JSON files (with agent containing '{agent}'): {total_files}")
     print(f"Total trace steps: {total_steps}")
     print(f"Total 'Error parsing' responses: {total_errors}")
     print(f"Error parsing ratio: {ratio:.2f}%")
