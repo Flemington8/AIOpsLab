@@ -31,6 +31,7 @@ class LocalizationTask(Task):
             Service Details:
             {app_summary}
 
+            You are requested to identify the service(s) where the root cause of the fault lies.
             You will begin by analyzing the service's state and telemetry, and then submit one of two possible solutions:
             1. list[str]: list of faulty components (i.e., service names)
             2. list[]: an empty list if no faults were detected
