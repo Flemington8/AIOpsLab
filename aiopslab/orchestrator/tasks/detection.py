@@ -46,11 +46,11 @@ class DetectionTask(Task):
 
             If you decide that there are no anomalies:
 
-            ```\nsubmit("No")\n```
+            ```\nsubmit(\"No\")\n```
 
             Or, if anomalies are found:
 
-            ```\nsubmit("Yes")\n```
+            ```\nsubmit(\"Yes\")\n```
 
             Please respond with only a single API call (a.k.a., action) per turn without any additional words, labels, or prefixes.
             """
