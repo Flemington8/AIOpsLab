@@ -14,6 +14,7 @@ This document provides detailed, step-by-step instructions for building your own
   - [Install kind](#install-kind)
   - [Install kubectl](#install-kubectl)
   - [Install Helm](#install-helm)
+  - [Install Lua, Luarocks, and Luasocket](#install-lua-luarocks-and-luasocket)
 - [Deployment Steps](#deployment-steps)
   - [1. Build the Custom KIND Image](#1-build-the-custom-kind-image)
   - [2. (Optional) Push the Image to Dockerhub](#2-optional-push-the-image-to-dockerhub)
@@ -100,6 +101,31 @@ sudo apt-get install helm
 ```
 
 For more information, see the [Helm installation guide](https://helm.sh/docs/intro/install/).
+
+### Install lua, luarocks, and luasocket
+
+Install lua, luarocks, and luasocket to run the AIOpsLab application:
+
+Install Lua:
+```bash
+sudo apt install build-essential libreadline-dev unzip
+curl -L -R -O http://www.lua.org/ftp/lua-5.3.5.tar.gz
+tar zxf lua-5.3.5.tar.gz
+cd lua-5.3.5
+make linux test
+sudo make install
+```
+
+Install LuaRocks and LuaSocket:
+```bash
+wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+tar zxpf luarocks-3.11.1.tar.gz
+cd luarocks-3.11.1
+./configure --with-lua-include=/usr/local/include && make && sudo make install
+sudo luarocks install luasocket
+```
+
+For more information, see the [Lua installation guide](https://www.lua.org/download.html) and the [LuaRocks installation guide](https://github.com/luarocks/luarocks/blob/master/docs/index.md).
 
 ---
 

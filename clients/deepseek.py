@@ -1,11 +1,11 @@
-"""Naive GPT4 client (with shell access) for AIOpsLab.
+"""Naive DeepSeek-R1 client (with shell access) for AIOpsLab.
 
-Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida et al. 
-"Gpt-4 technical report." arXiv preprint arXiv:2303.08774 (2023).
+"DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning" arXiv preprint arXiv:2501.12948 (2025).
 
-Code: https://openai.com/index/gpt-4-research/
-Paper: https://arxiv.org/abs/2303.08774
+Paper: https://arxiv.org/abs/2501.12948
 """
+
+
 import argparse
 import asyncio
 import time
@@ -13,21 +13,23 @@ import time
 import wandb
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
-from clients.utils.llm import GPT4Turbo
+from clients.utils.llm import DeepSeekR1
 from clients.utils.templates import DOCS_SHELL_ONLY
 
 
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = GPT4Turbo()
+        self.llm = DeepSeekR1()
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
 
-        self.shell_api = self._filter_dict(apis, lambda k, _: "exec_shell" in k)
+        self.shell_api = self._filter_dict(
+            apis, lambda k, _: "exec_shell" in k)
         self.submit_api = self._filter_dict(apis, lambda k, _: "submit" in k)
-        stringify_apis = lambda apis: "\n\n".join(
+
+        def stringify_apis(apis): return "\n\n".join(
             [f"{k}\n{v}" for k, v in apis.items()]
         )
 
@@ -41,6 +43,7 @@ class Agent:
 
         self.history.append({"role": "system", "content": self.system_message})
         self.history.append({"role": "user", "content": self.task_message})
+        self.history.append({"role": "assistant", "content": ""})
 
     async def get_action(self, input) -> str:
         """Wrapper to interface the agent with OpsBench.
@@ -62,7 +65,7 @@ class Agent:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-    description="OpenAI gpt client for AIOpsLab")
+        description="DeepSeek R1 client for AIOpsLab")
     parser.add_argument(
         "--use_wandb",
         action="store_true",
@@ -82,7 +85,7 @@ if __name__ == "__main__":
         agent = Agent()
 
         orchestrator = Orchestrator(use_wandb=args.use_wandb)
-        orchestrator.register_agent(agent, name="gpt-4.5-preview")
+        orchestrator.register_agent(agent, name="deepseek-r1")
         try:
             print(f"*"*30)
             print(f"Began processing pid {pid}.")
@@ -102,13 +105,3 @@ if __name__ == "__main__":
     if args.use_wandb:
         # Finish the wandb run
         wandb.finish()
-        
-    # agent = Agent()
-
-    # orchestrator = Orchestrator()
-    # orchestrator.register_agent(agent, name="gpt-w-shell")
-
-    # pid = "misconfig_app_hotel_res-mitigation-1"
-    # problem_desc, instructs, apis = orchestrator.init_problem(pid)
-    # agent.init_context(problem_desc, instructs, apis)
-    # asyncio.run(orchestrator.start_problem(max_steps=10))
