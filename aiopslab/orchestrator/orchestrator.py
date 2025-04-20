@@ -9,12 +9,10 @@ from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
 from aiopslab.utils.status import *
-from aiopslab.utils.critical_section import CriticalSection
 from aiopslab.service.telemetry.prometheus import Prometheus
 import time
 import inspect
 import asyncio
-import atexit
 
 
 class Orchestrator:
@@ -49,15 +47,19 @@ class Orchestrator:
 
         print("Setting up OpenEBS...")
 
-        # Install OpenEBS
-        self.kubectl.exec_command(
-            "kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
-        )
-        self.kubectl.exec_command(
-            "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
-        )
-        self.kubectl.wait_for_ready("openebs")
-        print("OpenEBS setup completed.")
+        command = "kubectl get pods -n openebs"
+        result = self.kubectl.exec_command(command)
+        if "Running" in result:
+            print("OpenEBS is already running. Skipping installation.")
+        else:
+            self.kubectl.exec_command(
+                "kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
+            )
+            self.kubectl.exec_command(
+                "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+            )
+            self.kubectl.wait_for_ready("openebs")
+            print("OpenEBS setup completed.")
 
         # Setup and deploy Prometheus
         self.prometheus = Prometheus()
@@ -67,12 +69,8 @@ class Orchestrator:
         prob.app.delete()
         prob.app.deploy()
 
-        # make sure is_fault_injected is correct to apply appropriate
-        # function with atexit to recover fault
-        with CriticalSection():
-            # inject fault
-            prob.inject_fault()
-            atexit.register(exit_cleanup_fault, prob=prob)
+        # inject fault
+        prob.inject_fault()
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -124,7 +122,7 @@ class Orchestrator:
 
         try:
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
-
+        
             if hasattr(env_response, "error"):
                 env_response = str(env_response)
                 print("An error occurred:", env_response)
@@ -152,29 +150,19 @@ class Orchestrator:
         action, env_response, results = "", "", {}
         self.session.start()
 
-        # catch any exception and recover fault before the users catch it
-        try:
-            for step in range(max_steps):
-                action = await self.ask_agent(action_instr)
-                self.sprint.agent(action)
+        for step in range(max_steps):
+            action = await self.ask_agent(action_instr)
+            self.sprint.agent(action)
 
-                env_response = await self.ask_env(action)
-                self.sprint.service(env_response)
+            env_response = await self.ask_env(action)
+            self.sprint.service(env_response)
 
-                if env_response == SubmissionStatus.VALID_SUBMISSION:
-                    break
-                elif env_response == SubmissionStatus.INVALID_SUBMISSION:
-                    raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
+            if env_response == SubmissionStatus.VALID_SUBMISSION:
+                break
+            elif env_response == SubmissionStatus.INVALID_SUBMISSION:
+                raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
 
-                action_instr = env_response + "\n" + "Please take the next action"
-        except Exception as e:
-            # Make sure the fault cleanup function is unregistered
-            # after recovering fault ahead because of exceptions
-            with CriticalSection():
-                print("Some exception happened. Recovering the injected fault...")
-                self.session.problem.recover_fault()
-                atexit.unregister(exit_cleanup_fault)
-            raise e
+            action_instr = env_response + "\n" + "Please take the next action"
 
         self.session.end()
 
@@ -187,23 +175,13 @@ class Orchestrator:
 
         self.session.set_results(results)
         self.session.to_json(use_wandb=self.use_wandb)
+        self.session.problem.recover_fault()
 
-        with CriticalSection():
-            self.session.problem.recover_fault()
-            atexit.unregister(exit_cleanup_fault)
-            
         # Beyond recovering from fault,
         # I feel sometimes it is safer to delete the whole namespace.
         # But this will take more time.
         # if not self.session.problem.sys_status_after_recovery():
         self.session.problem.app.cleanup()
-        self.prometheus.teardown()
-        print("Uninstalling OpenEBS...")
-        self.kubectl.exec_command("kubectl delete sc openebs-hostpath openebs-device --ignore-not-found")
-        self.kubectl.exec_command(
-            "kubectl delete -f https://openebs.github.io/charts/openebs-operator.yaml"
-        )
-        self.kubectl.wait_for_namespace_deletion("openebs")
 
         self.execution_end_time = time.time()
         total_execution_time = self.execution_end_time - self.execution_start_time
@@ -220,8 +198,3 @@ class Orchestrator:
             "results": results,
             "framework_overhead": framework_overhead,
         }
-
-
-def exit_cleanup_fault(prob):
-    print("Recovering fault before exit...")
-    prob.recover_fault()

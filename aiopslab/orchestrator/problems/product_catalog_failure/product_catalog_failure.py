@@ -65,6 +65,7 @@ class ProductCatalogServiceFailureLocalization(
     def __init__(self):
         ProductCatalogServiceFailureBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the product catalog service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

@@ -93,6 +93,7 @@ class AssignNonExistentNodeSocialNetLocalization(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -136,6 +137,7 @@ class AssignNonExistentNodeSocialNetAnalysis(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         AnalysisTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -177,6 +179,7 @@ class AssignNonExistentNodeSocialNetMitigation(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         MitigationTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float) -> dict:
         print("== Evaluation ==")
@@ -188,7 +191,7 @@ class AssignNonExistentNodeSocialNetMitigation(
 
         # Check if the faulty service exists
         faulty_service_exists = any(
-            self.faulty_service in pod.metadata.name for pod in pod_list.items
+            pod.metadata.name == self.faulty_service for pod in pod_list.items
         )
         if not faulty_service_exists:
             print(f"Pod named {self.faulty_service} does not exist.")

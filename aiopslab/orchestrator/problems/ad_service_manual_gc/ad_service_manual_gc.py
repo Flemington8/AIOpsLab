@@ -61,6 +61,7 @@ class AdServiceManualGcLocalization(AdServiceManualGcBaseTask, LocalizationTask)
     def __init__(self):
         AdServiceManualGcBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the ad service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

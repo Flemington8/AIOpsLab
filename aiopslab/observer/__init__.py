@@ -12,8 +12,7 @@ from yaml import full_load
 root_path = pathlib.Path(__file__).parent
 sys.path.append(root_path)
 # read the configuration file
-with open(root_path / "monitor_config.yaml", "r") as f:
-    monitor_config = full_load(f)
+monitor_config = full_load(open(root_path / "monitor_config.yaml", "r"))
 
 
 # root_config = full_load(open(root_path / "config.yaml", "r"))
